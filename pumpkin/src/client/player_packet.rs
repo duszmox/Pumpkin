@@ -547,16 +547,19 @@ impl Player {
                     let entity = &self.living_entity.entity;
                     let world = &entity.world;
 
-                    world
-                        .set_block(
-                            WorldPosition(location.0 + face.to_offset()),
-                            block.default_state_id,
-                        )
+                    // Calculate the final placement location based on block face
+                    let placement_location = WorldPosition(location.0 + face.to_offset());
+
+                    // Check if the block can be placed at this location
+                    if self.can_place_block_at(&placement_location) {
+                        world
+                            .set_block(placement_location, block.default_state_id)
+                            .await;
+                    }
+                    self.client
+                        .send_packet(&CAcknowledgeBlockChange::new(use_item_on.sequence))
                         .await;
                 }
-                self.client
-                    .send_packet(&CAcknowledgeBlockChange::new(use_item_on.sequence))
-                    .await;
             }
         } else {
             self.kick(TextComponent::text("Invalid block face")).await;

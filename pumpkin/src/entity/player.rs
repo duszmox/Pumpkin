@@ -534,6 +534,13 @@ impl Player {
         }) < d * d
     }
 
+    /// Checks if a block can be placed at the given location.
+    /// Returns `true` if the y-coordinate is within the valid range (-64 to 320).
+    pub fn can_place_block_at(&self, location: &WorldPosition) -> bool {
+        let y = location.0.y;
+        (-64..=320).contains(&y)
+    }
+
     /// Kicks the Client with a reason depending on the connection state
     pub async fn kick<'a>(&self, reason: TextComponent<'a>) {
         if self
